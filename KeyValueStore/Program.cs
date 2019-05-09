@@ -8,39 +8,39 @@ namespace KeyValueStore
 {
     class Program
     {
-        struct KeyValue
+        struct KeyValue<TKey,TValue>
         {
-            public readonly string key;
-            public readonly object value;
+            public readonly TKey key;
+            public readonly TValue value;
 
-            public KeyValue(string key, object value)
+            public KeyValue(TKey key, TValue value)
             {
                 this.key = key;
                 this.value = value;
             }
         }
 
-        class MyDictionary
+        class MyDictionary<TKey, TValue> where TKey : IEquatable<TKey>
         {
             private int capacity = 4;
 
-            private KeyValue[] kva;
+            private KeyValue<TKey, TValue>[] kva;
             private int numElements = 0;
 
             public MyDictionary()
             {
-                this.kva = new KeyValue[capacity];
+                this.kva = new KeyValue<TKey, TValue>[capacity];
             }
 
-            public object this[string key]
+            public TValue this[TKey key]
             {
                 get
                 {
                     foreach (var k in kva)
                     {
-                        if (k.key == key) return k.value;
+                        if (k.key.Equals(key)) return k.value;
                     }
-                    throw new KeyNotFoundException(key);
+                    throw new KeyNotFoundException(key.ToString());
                 }
 
                 set
@@ -48,15 +48,15 @@ namespace KeyValueStore
                     bool hasSeen = false;
                     for (int i = 0; i < numElements; i++)
                     {
-                        if (kva[i].key==key)
+                        if (kva[i].key.Equals(key))
                         {
-                            kva[i] = new KeyValue(key,value);
+                            kva[i] = new KeyValue<TKey, TValue>(key,value);
                             hasSeen = true;
                             break;
                         }
                     }
                     if (!hasSeen)
-                        kva[numElements++] = new KeyValue(key, value);
+                        kva[numElements++] = new KeyValue<TKey, TValue>(key, value);
 
                     //double the capacity when numElements more than 75% of capacity
                     if (numElements>=capacity*0.75)
@@ -64,7 +64,7 @@ namespace KeyValueStore
                         capacity <<= 1;
 
                         //create a new array with a temp reference
-                        KeyValue[] temp = new KeyValue[capacity];
+                        KeyValue<TKey, TValue>[] temp = new KeyValue<TKey, TValue>[capacity];
 
                         //copy all old values to new
                         kva.CopyTo(temp, 0);
@@ -88,7 +88,7 @@ namespace KeyValueStore
 
         static void Main(string[] args)
         {
-            var d = new MyDictionary();
+            var d = new MyDictionary<string,int>();
             try
             {
                 Console.WriteLine(d["Cats"]);
@@ -99,12 +99,12 @@ namespace KeyValueStore
             }
             d["Cats"] = 42;
             d["Dogs"] = 17;
-            Console.WriteLine($"{(int)d["Cats"]}, {(int)d["Dogs"]}");
+            Console.WriteLine($"{d["Cats"]}, {d["Dogs"]}");
             Console.WriteLine($"Current numbers of elements: {d.Count()}, current capacity: {d.Capacity()}");
 
             d["Dragon"] = 99;
             d["Grandma"] = 100;
-            Console.WriteLine($"{(int)d["Grandma"]}, {(int)d["Dragon"]}");
+            Console.WriteLine($"{d["Grandma"]}, {d["Dragon"]}");
             Console.WriteLine($"Current numbers of elements: {d.Count()}, current capacity: {d.Capacity()}");
         }
     }
