@@ -58,7 +58,7 @@ namespace KeyValueStore
                     if (!hasSeen)
                         kva[numElements++] = new KeyValue<TKey, TValue>(key, value);
 
-                    //double the capacity when numElements more than 75% of capacity
+                    //double the capacity when numElements more than 100% of capacity
                     if (numElements>=capacity)
                     {
                         capacity <<= 1;
