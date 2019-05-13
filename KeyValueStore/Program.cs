@@ -59,7 +59,7 @@ namespace KeyValueStore
                         kva[numElements++] = new KeyValue<TKey, TValue>(key, value);
 
                     //double the capacity when numElements more than 75% of capacity
-                    if (numElements>=capacity*0.75)
+                    if (numElements>=capacity)
                     {
                         capacity <<= 1;
 
@@ -103,6 +103,7 @@ namespace KeyValueStore
             Console.WriteLine($"Current numbers of elements: {d.Count()}, current capacity: {d.Capacity()}");
 
             d["Dragon"] = 99;
+            Console.WriteLine($"Current numbers of elements: {d.Count()}, current capacity: {d.Capacity()}");
             d["Grandma"] = 100;
             Console.WriteLine($"{d["Grandma"]}, {d["Dragon"]}");
             Console.WriteLine($"Current numbers of elements: {d.Count()}, current capacity: {d.Capacity()}");
